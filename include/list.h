@@ -78,5 +78,32 @@ public:
             pop_front();
         }
     }
+    bool remove(const T& value)
+    {
+        if(!head)
+        {
+            return false;
+        }
+        if (head->value==value)
+        {
+            pop_front();
+            return true;
+        }
+
+        Node* current = head;
+        while (current->next)
+        {
+            if (current->next->value==value)
+            {
+                Node* temp = current->next;
+                current->next=temp->next;
+                delete temp;
+                size--;
+                return true;
+            }
+            current=current->next;
+        }
+        return false;
+    }
 };
 

@@ -101,3 +101,14 @@ TEST(Operations, Clear)
     std::string expectedOutput = "\n";
     EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
+
+TEST(Operations, Remove)
+{
+    SkipList<int> list;
+    list.insert(3);
+    list.insert(2);
+    list.remove(2);
+    list.remove(3);
+    EXPECT_FALSE(list.contains(3));
+    EXPECT_FALSE(list.contains(2));
+}
