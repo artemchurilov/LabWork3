@@ -22,6 +22,28 @@ public:
     {
         clear();
     }
+
+    //info
+    bool contains(const T& value) const {
+        Node* current = head;
+        while (current) {
+            if (current->value == value) return true;
+            current = current->next;
+        }
+        return false;
+    }
+
+    void print() const
+    {
+        Node* current = head;
+        while (current)
+        {
+            std::cout << current->value << " ";
+            current = current->next;
+        }
+        std::cout << "\n";
+    }
+    //operations
     void insert(const T& value)
     {
         Node* newNode = new Node(value);
@@ -40,16 +62,6 @@ public:
         head = head->next;
         delete temp;
         size--;
-    }
-    void print() const
-    {
-        Node* current = head;
-        while (current)
-        {
-            std::cout << current->value << " ";
-            current = current->next;
-        }
-        std::cout << "\n";
     }
     void clear()
     {
