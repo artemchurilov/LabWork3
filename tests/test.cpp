@@ -1,3 +1,7 @@
+/* Artem Churilov st130184@student.spbu.ru
+    LabWork 3 task "STL-containers" step 2 "Create Template"
+*/
+
 #include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
