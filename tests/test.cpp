@@ -14,7 +14,7 @@ TEST(CI_test, first_test)
 {
     EXPECT_TRUE(true);
 }
-
+//info
 TEST(Information, Print)
 {
     SkipList<int> list;
@@ -41,7 +41,29 @@ TEST(Information, Contains)
     list.insert(3);
     EXPECT_TRUE(list.contains(3));    
 }
+TEST(Information,Size)
+{
+    SkipList<int> list;
+    list.insert(42);
+    list.insert(42);
+    list.insert(42);
+    EXPECT_TRUE(list.get_size()==3);
+}
 
+TEST(Information, IsEmpty)
+{
+    SkipList<int> list;
+    EXPECT_TRUE(list.is_empty());
+}
+TEST(Information, NotEmpty)
+{
+    SkipList<int> list;
+    list.insert(42);
+    EXPECT_FALSE(list.is_empty());
+}
+
+
+//operations
 TEST(Operations, Insert)
 {
     SkipList<int> list;

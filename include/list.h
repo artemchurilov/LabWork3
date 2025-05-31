@@ -43,6 +43,14 @@ public:
         }
         std::cout << "\n";
     }
+    
+    size_t get_size() const {
+        return size;
+    }
+    bool is_empty() const {
+        return size == 0;
+    }
+
     //operations
     void insert(const T& value)
     {
