@@ -23,6 +23,44 @@ public:
         clear();
     }
 
+    //iterators
+    class Iterator
+    {
+    private:
+        Node* current;
+    public:
+        Iterator(Node* node):current(node){}
+        T& operator*()
+        {
+            return current->value;
+        }
+        Iterator& operator++()
+        {
+            if(current)
+            {
+                current=current->next;
+            }
+        return *this;
+        }
+
+        bool operator==(const Iterator& other) const
+        {
+            return current==other.current;
+        }
+        bool operator!=(const Iterator& other) const
+        {
+            return !(*this == other);
+        }
+    };
+    Iterator begin()
+    {
+        return Iterator(head);
+    };
+    Iterator end()
+    {
+        return Iterator(nullptr);
+    };
+    
     //info
     bool contains(const T& value) const {
         Node* current = head;

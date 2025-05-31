@@ -10,9 +10,37 @@ int main(int argc, char **argv) {
     return RUN_ALL_TESTS();
 }
 
-TEST(CI_test, first_test)
+TEST(CITest, FirstTest)
 {
     EXPECT_TRUE(true);
+}
+
+//iterators
+TEST(Iterators, BasicTest)
+{
+    SkipList<int> list;
+    list.insert(42);
+    list.insert(24);
+    list.insert(142);
+    list.insert(124);
+    auto it = list.begin();
+
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    std::ostringstream capturedOutput;
+    std::cout.rdbuf(capturedOutput.rdbuf());
+    while (it!=list.end())
+    {
+        if (*it==42)
+        {
+            std::cout << 42;
+        }
+        std::cout << *it << "\n";
+        ++it;
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+
+    std::string expectedOutput = "124\n142\n24\n4242\n";
+    EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
 //info
 TEST(Information, Print)
