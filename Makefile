@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -I. -Werror -Wpedantic -Wall -Wextra -g -fPIC
+CXXFLAGS = -std=c++20 -I. -Werror -Wpedantic -Wall -Wextra -g -fPIC
 LDFLAGS = -lm
 
 TARGET = template

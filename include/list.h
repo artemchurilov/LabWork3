@@ -7,7 +7,7 @@
 #include <numeric> 
 #include <ranges>
 template <typename T>
-class SkipList
+class CircularList
 {
 public:
     //types
@@ -22,52 +22,54 @@ private:
     {
         T value;
         Node* next;
-        Node(const T& val) : value(val), next(nullptr) {}
+        Node(const T& val=T(),Node* n =nullptr) : value(val), next(n) {}
     };
-    Node* head;
+    Node* dummy;
     size_t size_;
 
-    void copyFrom(const SkipList& other)
+    void copyFrom(const CircularList& other)
     {
-        if(other.head==nullptr)
-        {
-            head=nullptr;
-            size_=0;
-            return;
-        }
-
-        head = new Node(other.head->value);
-        Node* current = head;
-        Node* otherCurrent = other.head-> next;
-        
-        while(otherCurrent)
-        {
-            current->next = new Node(otherCurrent->value);
-            current = current -> next;
-            otherCurrent = otherCurrent -> next;
+        Node* other_current = other.dummy->next;
+        Node* last = dummy;
+        while (other_current != other.dummy) {
+            Node* new_node = new Node(other_current->value, dummy);
+            last->next = new_node;
+            last = new_node;
+            other_current = other_current->next;
         }
         size_ = other.size_;
     }
     void clear()
     {
-        while (head) 
+        while (!empty()) 
         {
             pop_front();
         }
     }
 public:
-    SkipList() : head(nullptr),size_(0) {}
-    ~SkipList()
+    CircularList() : size_(0) 
+    {
+        dummy = new Node();
+        dummy->next = dummy;
+    }
+    ~CircularList()
     {
         clear();
+        delete dummy;
     }
-
-    SkipList(const SkipList& other) : head(nullptr), size_(0)
+    CircularList(std::initializer_list<T> init) : CircularList() 
+    {
+        for (const auto& val : init) 
+        {
+            push_back(val);
+        }
+    }
+    CircularList(const CircularList& other) : CircularList()
     {
         copyFrom(other);
     }
 
-    SkipList& operator=(const SkipList& other)
+    CircularList& operator=(const CircularList& other)
     {
         if(this != &other)
         {
@@ -83,6 +85,7 @@ public:
     {
     private:
         Node* current;
+        Node* dummy;
     public:
         //types
         using iterator_category = std::forward_iterator_tag;
@@ -91,7 +94,7 @@ public:
         using pointer = T*;
         using reference = T&;
         //operations
-        Iterator(Node* node):current(node){}
+        Iterator(Node* node, Node* dummy_node):current(node),dummy(dummy_node){}
         
         Iterator ConstIterator() const
         {
@@ -139,17 +142,18 @@ public:
     };
     Iterator begin()
     {
-        return Iterator(head);
+        return Iterator(dummy->next,dummy);
     };
     Iterator end()
     {
-        return Iterator(nullptr);
+        return Iterator(dummy, dummy);
     };
 
     class ConstIterator
     {
     private:
         const Node* current;
+        const Node* dummy;
     public:
         //types
         using iterator_category = std::forward_iterator_tag;
@@ -158,12 +162,12 @@ public:
         using pointer = const T*;
         using reference = const T&;  
         //operations
-        ConstIterator(const Node* node) : current(node){};
-        ConstIterator(Iterator it) : current(it.operator->()){}
+        ConstIterator(const Node* node, const Node* dummy_node) : current(node), dummy(dummy_node){};
+        ConstIterator(Iterator it) : current(it.current),dummy(it.dummy){}
 
         const T& operator*() const
         {
-            if(!current)
+            if(current==dummy)
             {
                 throw std::runtime_error("Dereferencing end iterator");
             }
@@ -171,7 +175,7 @@ public:
         }
         ConstIterator& operator++()
         {
-            if(current)
+            if(current != dummy)
             {
                 current=current->next;
             }
@@ -185,7 +189,7 @@ public:
         }
         const T* operator->() const
         {
-            if (!current)
+            if (current==dummy)
             {
                 throw std::runtime_error("Accessing end iterator");
             }
@@ -202,25 +206,25 @@ public:
     };
     ConstIterator begin() const
     {
-        return ConstIterator(head);
+        return ConstIterator(dummy->next,dummy);
     };
     ConstIterator end() const
     {
-        return ConstIterator(nullptr);
+        return ConstIterator(dummy,dummy);
     };
     ConstIterator cbegin() const
     {
-        return ConstIterator(head);
+        return ConstIterator(dummy->next,dummy);
     };
     ConstIterator cend() const
     {
-        return ConstIterator(nullptr);
+        return ConstIterator(dummy,dummy);
     };    
 
     //info
     bool contains(const T& value) const {
-        Node* current = head;
-        while (current) {
+        Node* current = dummy->next;
+        while (current!=dummy) {
             if (current->value == value) return true;
             current = current->next;
         }
@@ -229,8 +233,8 @@ public:
 
     void print() const
     {
-        Node* current = head;
-        while (current)
+        Node* current = dummy->next;
+        while (current!=dummy)
         {
             std::cout << current->value << " ";
             current = current->next;
@@ -248,52 +252,57 @@ public:
     }
 
     //operations
-    void insert(const T& value)
+    void push_front(const T& value) {
+        Node* newNode = new Node(value, dummy->next);
+        dummy->next = newNode;
+        size_++;
+    }
+    void push_back(const T& value)
     {
-        Node* newNode = new Node(value);
-        newNode->next = head;
-        head = newNode;
+        Node* last = dummy;
+        while (last->next != dummy) 
+        {
+            last = last->next;
+        }
+        last->next = new Node(value, dummy);
         size_++;
     }
     void pop_front() 
     {
-        if (!head) 
+        if (empty()) 
         {
             throw std::out_of_range("List is empty");
         }
         
-        Node* temp = head;
-        head = head->next;
-        delete temp;
+        Node* first = dummy->next;
+        dummy->next = first->next;
+        delete first;
         size_--;
     }
 
     bool remove(const T& value)
     {
-        if(!head)
+        if(empty())
         {
             return false;
         }
-        if (head->value==value)
-        {
-            pop_front();
-            return true;
-        }
+        
+        Node* prev = dummy;
+        Node* current = dummy->next;
+        bool removed = false;
 
-        Node* current = head;
-        while (current->next)
-        {
-            if (current->next->value==value)
-            {
-                Node* temp = current->next;
-                current->next=temp->next;
-                delete temp;
+        while (current != dummy) {
+            if (current->value == value) {
+                prev->next = current->next;
+                delete current;
                 size_--;
-                return true;
+                removed = true;
+                current = prev->next;
+            } else {
+                prev = current;
+                current = current->next;
             }
-            current=current->next;
         }
-        return false;
+        return removed;
     }
 };
-

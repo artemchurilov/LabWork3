@@ -20,11 +20,11 @@ TEST(CITest, FirstTest)
 //iterators
 TEST(Iterator, BasicTest)
 {
-    SkipList<int> list;
-    list.insert(42);
-    list.insert(24);
-    list.insert(142);
-    list.insert(124);
+    CircularList<int> list;
+    list.push_front(42);
+    list.push_front(24);
+    list.push_front(142);
+    list.push_front(124);
     auto it = list.begin();
 
     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
@@ -46,11 +46,11 @@ TEST(Iterator, BasicTest)
 }
 TEST(Iterator, AdvancedTest)
 {
-    SkipList<int> list;
-    list.insert(42);
-    list.insert(24);
-    list.insert(142);
-    list.insert(124);
+    CircularList<int> list;
+    list.push_front(42);
+    list.push_front(24);
+    list.push_front(142);
+    list.push_front(124);
     auto it = list.begin();
     
     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
@@ -69,20 +69,20 @@ TEST(Iterator, AdvancedTest)
     std::cout.rdbuf(oldCoutBuffer);
     
     std::string expectedOutput = "124  142\n  4224  42\n  ";
-    SkipList<std::string> string_list;
-    string_list.insert("Artem");
+    CircularList<std::string> string_list;
+    string_list.push_front("Artem");
     auto it2 = string_list.begin();
     EXPECT_TRUE(it2->size()==5);
     EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
 TEST(ConstIterator, BasicTest) {
-    SkipList<int> list;
-    list.insert(42);
-    list.insert(24);
-    list.insert(43);
-    list.insert(422);
+    CircularList<int> list;
+    list.push_front(42);
+    list.push_front(24);
+    list.push_front(43);
+    list.push_front(422);
     
-    const SkipList<int> constList = list;
+    const CircularList<int> constList = list;
     std::vector<int> expected_values = {422, 43, 24, 42};
     std::vector<int> actual_values;
 
@@ -97,13 +97,13 @@ TEST(ConstIterator, BasicTest) {
 }
 
 TEST(ConstIterator, AdvancedTest) {
-    SkipList<int> list;
-    list.insert(42);
-    list.insert(24);
-    list.insert(43);
-    list.insert(422);
+    CircularList<int> list;
+    list.push_front(42);
+    list.push_front(24);
+    list.push_front(43);
+    list.push_front(422);
     
-    const SkipList<int> constList = list;
+    const CircularList<int> constList = list;
     
     std::vector<int> expected = {422, 43, 24, 42};
     std::vector<int> actual;
@@ -120,10 +120,10 @@ TEST(ConstIterator, AdvancedTest) {
 //info
 TEST(Information, Print)
 {
-    SkipList<int> list;
-    list.insert(1);
-    list.insert(2);
-    list.insert(3);
+    CircularList<int> list;
+    list.push_front(1);
+    list.push_front(2);
+    list.push_front(3);
 
     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
     std::ostringstream capturedOutput;
@@ -138,30 +138,30 @@ TEST(Information, Print)
 
 TEST(Information, Contains)
 {
-    SkipList<int> list;
-    list.insert(1);
-    list.insert(2);
-    list.insert(3);
+    CircularList<int> list;
+    list.push_front(1);
+    list.push_front(2);
+    list.push_front(3);
     EXPECT_TRUE(list.contains(3));    
 }
 TEST(Information,Size)
 {
-    SkipList<int> list;
-    list.insert(42);
-    list.insert(42);
-    list.insert(42);
+    CircularList<int> list;
+    list.push_front(42);
+    list.push_front(42);
+    list.push_front(42);
     EXPECT_TRUE(list.size()==3);
 }
 
 TEST(Information, IsEmpty)
 {
-    SkipList<int> list;
+    CircularList<int> list;
     EXPECT_TRUE(list.empty());
 }
 TEST(Information, NotEmpty)
 {
-    SkipList<int> list;
-    list.insert(42);
+    CircularList<int> list;
+    list.push_front(42);
     EXPECT_FALSE(list.empty());
 }
 
@@ -169,27 +169,27 @@ TEST(Information, NotEmpty)
 //operations
 TEST(Operations, Insert)
 {
-    SkipList<int> list;
-    list.insert(1);
-    list.insert(2);
-    list.insert(3);
+    CircularList<int> list;
+    list.push_front(1);
+    list.push_front(2);
+    list.push_front(3);
     EXPECT_TRUE(list.contains(3)); 
 }
 
 
 TEST(Operations, PopFront)
 {
-    SkipList<int> list;
-    list.insert(1);
-    list.insert(2);
-    list.insert(3);
+    CircularList<int> list;
+    list.push_front(1);
+    list.push_front(2);
+    list.push_front(3);
     list.pop_front();
     EXPECT_FALSE(list.contains(3)); 
 }
 
 // TEST(Operations, Clear)
 // {
-//     SkipList<int> list;
+//     CircularList<int> list;
 //     list.insert(1);
 //     list.insert(2);
 //     list.insert(3);
@@ -207,9 +207,9 @@ TEST(Operations, PopFront)
 
 TEST(Operations, Remove)
 {
-    SkipList<int> list;
-    list.insert(3);
-    list.insert(2);
+    CircularList<int> list;
+    list.push_front(3);
+    list.push_front(3);
     list.remove(2);
     list.remove(3);
     EXPECT_FALSE(list.contains(3));
