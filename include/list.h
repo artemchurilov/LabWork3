@@ -1,6 +1,8 @@
 /* Artem Churilov st130184@student.spbu.ru
     LabWork 3 task "STL-containers" step 2 "Create Template"
 */
+#ifndef LIST_H
+#define LIST_H
 
 #include <iostream>
 #include <iterator>
@@ -356,3 +358,4 @@ static_assert(std::ranges::bidirectional_range<CircularList<int>>);
 static_assert(std::is_default_constructible_v<CircularList<int>::Iterator>);
 static_assert(std::is_copy_constructible_v<CircularList<int>::Iterator>);
 static_assert(std::is_destructible_v<CircularList<int>::Iterator>);
+#endif
