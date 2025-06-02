@@ -187,23 +187,6 @@ TEST(Operations, PopFront)
     EXPECT_FALSE(list.contains(3)); 
 }
 
-// TEST(Operations, Clear)
-// {
-//     CircularList<int> list;
-//     list.insert(1);
-//     list.insert(2);
-//     list.insert(3);
-//     list.clear();
-//     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-//     std::ostringstream capturedOutput;
-//     std::cout.rdbuf(capturedOutput.rdbuf());
-
-//     list.print();
-//     std::cout.rdbuf(oldCoutBuffer);
-
-//     std::string expectedOutput = "\n";
-//     EXPECT_EQ(capturedOutput.str(), expectedOutput);
-// }
 
 TEST(Operations, Remove)
 {
@@ -214,4 +197,113 @@ TEST(Operations, Remove)
     list.remove(3);
     EXPECT_FALSE(list.contains(3));
     EXPECT_FALSE(list.contains(2));
+}
+
+
+TEST(Constructors, DefaultConstructor) {
+    CircularList<int> list;
+    EXPECT_TRUE(list.empty());
+    EXPECT_EQ(list.size(), 0);
+}
+
+TEST(Constructors, InitializerList) {
+    CircularList<int> list = {1, 2, 3, 4};
+    EXPECT_EQ(list.size(), 4);
+    
+    std::vector<int> elements;
+    for (const auto& item : list) {
+        elements.push_back(item);
+    }
+    EXPECT_EQ(elements, (std::vector<int>{1, 2, 3, 4}));
+}
+
+TEST(Constructors, CopyConstructor) {
+    CircularList<int> original = {1, 2, 3};
+    CircularList<int> copy(original);
+    
+    EXPECT_EQ(original.size(), copy.size());
+    
+    auto it1 = original.begin();
+    auto it2 = copy.begin();
+    while (it1 != original.end() && it2 != copy.end()) {
+        EXPECT_EQ(*it1, *it2);
+        ++it1;
+        ++it2;
+    }
+}
+
+TEST(Assignment, CopyAssignment) {
+    CircularList<int> original = {5, 6, 7};
+    CircularList<int> copy;
+    copy = original;
+    
+    EXPECT_EQ(original.size(), copy.size());
+    
+    original.pop_front();
+    EXPECT_NE(original.size(), copy.size());
+    
+    auto it = copy.begin();
+    EXPECT_EQ(*it, 5);
+}
+
+TEST(ErrorHandling, PopFrontEmpty) {
+    CircularList<int> list;
+    EXPECT_THROW(list.pop_front(), std::out_of_range);
+}
+
+TEST(ErrorHandling, DereferenceEnd) {
+    CircularList<int> list;
+    auto it = list.end();
+    EXPECT_THROW(*it, std::runtime_error);
+    EXPECT_THROW(it.operator->(), std::runtime_error);
+}
+
+TEST(Methods, SequentialRemoval) {
+    CircularList<int> list = {1, 2, 3, 4, 5};
+    
+    EXPECT_TRUE(list.remove(3));
+    EXPECT_EQ(list.size(), 4);
+    
+    EXPECT_TRUE(list.remove(1));
+    EXPECT_EQ(list.size(), 3);
+    
+    EXPECT_TRUE(list.remove(5));
+    EXPECT_EQ(list.size(), 2);
+    
+    std::vector<int> remaining;
+    for (const auto& item : list) {
+        remaining.push_back(item);
+    }
+    EXPECT_EQ(remaining, (std::vector<int>{2, 4}));
+}
+
+TEST(Methods, PushFrontAndBack) {
+    CircularList<int> list;
+    list.push_front(3);
+    list.push_front(2);
+    list.push_front(1);
+    list.push_back(4);
+    list.push_back(5);
+    
+    std::vector<int> expected = {1, 2, 3, 4, 5};
+    std::vector<int> actual;
+    for (const auto& item : list) {
+        actual.push_back(item);
+    }
+    EXPECT_EQ(expected, actual);
+}
+
+TEST(Circularity, IteratorLoop) {
+    CircularList<int> list = {1, 2};
+    auto it = list.begin();
+    
+    std::vector<int> values;
+    for (int i = 0; i < 5; ++i) {
+        values.push_back(*it);
+        ++it;
+        if (it == list.end()) {
+            it = list.begin();
+        }
+    }
+    EXPECT_EQ(values, (std::vector<int>{1, 2, 1, 2, 1}));
 }

@@ -103,7 +103,7 @@ public:
 
         T& operator*()
         {
-            if(!current)
+            if(current == dummy || current == nullptr)
             {
                 throw std::runtime_error("Dereferencing end iterator");
             }
@@ -125,7 +125,7 @@ public:
         }
         T* operator->()
         {
-            if(!current)
+            if(current == dummy || current == nullptr)
             {
                 throw std::runtime_error("Accessing end iterator");
             }
@@ -133,7 +133,7 @@ public:
         }
         bool operator==(const Iterator& other) const
         {
-            return current==other.current;
+            return current == other.current && dummy == other.dummy;
         }
         bool operator!=(const Iterator& other) const
         {
@@ -167,7 +167,7 @@ public:
 
         const T& operator*() const
         {
-            if(current==dummy)
+            if(current == dummy || current == nullptr)
             {
                 throw std::runtime_error("Dereferencing end iterator");
             }
@@ -189,7 +189,7 @@ public:
         }
         const T* operator->() const
         {
-            if (current==dummy)
+            if (current == dummy || current == nullptr)
             {
                 throw std::runtime_error("Accessing end iterator");
             }
@@ -197,7 +197,7 @@ public:
         }
         bool operator==(const ConstIterator& other) const
         {
-            return current==other.current;
+            return current == other.current && dummy == other.dummy;
         }
         bool operator!=(const ConstIterator& other) const
         {
