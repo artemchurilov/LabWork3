@@ -1,0 +1,4 @@
+PROJECT_NAME = "CircularList Template"
+OUTPUT_DIRECTORY = ./doc
+INPUT = ./include
+EXTRACT_ALL = YES
