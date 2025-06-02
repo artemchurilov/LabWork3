@@ -38,6 +38,7 @@ private:
             last = new_node;
             other_current = other_current->next;
         }
+        dummy->prev = last;
         size_ = other.size_;
     }
     void clear()
@@ -52,6 +53,7 @@ public:
     {
         dummy = new Node();
         dummy->next = dummy;
+        dummy->prev = dummy;
     }
     ~CircularList()
     {
@@ -281,9 +283,7 @@ public:
     //operations
     void push_front(const T& value) {
         Node* newNode = new Node(value, dummy->next, dummy);
-        if (dummy->next != dummy) {
-            dummy->next->prev = newNode;
-        }
+        dummy->next->prev = newNode;
         dummy->next = newNode;
         size_++;
     }
@@ -318,6 +318,7 @@ void push_back(const T& value) {
         while (current != dummy) {
             if (current->value == value) {
                 prev->next = current->next;
+                current->next->prev = prev;
                 delete current;
                 size_--;
                 removed = true;
