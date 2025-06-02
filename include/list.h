@@ -22,7 +22,8 @@ private:
     {
         T value;
         Node* next;
-        Node(const T& val=T(),Node* n =nullptr) : value(val), next(n) {}
+        Node* prev;
+        Node(const T& val=T(),Node* n =nullptr,Node* p = nullptr) : value(val), next(n),prev(p) {}
     };
     Node* dummy;
     size_t size_;
@@ -87,12 +88,14 @@ public:
         Node* current;
         Node* dummy;
     public:
+        Iterator() : current(nullptr), dummy(nullptr) {} 
         //types
         using iterator_category = std::forward_iterator_tag;
         using value_type = T;
         using difference_type = std::ptrdiff_t;
         using pointer = T*;
         using reference = T&;
+
         //operations
         Iterator(Node* node, Node* dummy_node):current(node),dummy(dummy_node){}
         
@@ -101,7 +104,7 @@ public:
             return ConstIterator(current);
         }
 
-        T& operator*()
+        T& operator*() const
         {
             if(current == dummy || current == nullptr)
             {
@@ -123,7 +126,18 @@ public:
             ++(*this);
             return temporary;
         }
-        T* operator->()
+        Iterator& operator--() {
+            if (current) {
+                current = current->prev;
+            }
+            return *this;
+        }
+        Iterator operator--(int) {
+            Iterator tmp = *this;
+            --(*this);
+            return tmp;
+        }
+        T* operator->() const
         {
             if(current == dummy || current == nullptr)
             {
@@ -155,6 +169,7 @@ public:
         const Node* current;
         const Node* dummy;
     public:
+        ConstIterator() : current(nullptr), dummy(nullptr) {}
         //types
         using iterator_category = std::forward_iterator_tag;
         using value_type = const T;
@@ -186,6 +201,18 @@ public:
             ConstIterator temporary = *this;
             ++(*this);
             return temporary;
+        }
+        ConstIterator& operator--() {
+            if (current) {
+                current = current->prev;
+            }
+            return *this;
+        }
+
+        ConstIterator operator--(int) {
+            ConstIterator tmp = *this;
+            --(*this);
+            return tmp;
         }
         const T* operator->() const
         {
@@ -253,33 +280,30 @@ public:
 
     //operations
     void push_front(const T& value) {
-        Node* newNode = new Node(value, dummy->next);
+        Node* newNode = new Node(value, dummy->next, dummy);
+        if (dummy->next != dummy) {
+            dummy->next->prev = newNode;
+        }
         dummy->next = newNode;
         size_++;
     }
-    void push_back(const T& value)
-    {
-        Node* last = dummy;
-        while (last->next != dummy) 
-        {
-            last = last->next;
-        }
-        last->next = new Node(value, dummy);
+void push_back(const T& value) {
+        Node* last = dummy->prev;
+        Node* newNode = new Node(value, dummy, last);
+        last->next = newNode;
+        dummy->prev = newNode;
         size_++;
     }
-    void pop_front() 
-    {
-        if (empty()) 
-        {
-            throw std::out_of_range("List is empty");
-        }
+
+    void pop_front() {
+        if (empty()) throw std::out_of_range("List is empty");
         
         Node* first = dummy->next;
         dummy->next = first->next;
+        first->next->prev = dummy;
         delete first;
         size_--;
     }
-
     bool remove(const T& value)
     {
         if(empty())
@@ -306,3 +330,8 @@ public:
         return removed;
     }
 };
+
+
+static_assert(std::forward_iterator<CircularList<int>::Iterator>);
+static_assert(std::forward_iterator<CircularList<int>::ConstIterator>);
+static_assert(std::ranges::forward_range<CircularList<int>>);
