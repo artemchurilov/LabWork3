@@ -42,7 +42,16 @@ public:
             }
         return *this;
         }
-
+        Iterator operator++(int)
+        {
+            Iterator temporary = *this;
+            ++(*this);
+            return temporary;
+        }
+        T* operator->()
+        {
+            return &(current->value);
+        }
         bool operator==(const Iterator& other) const
         {
             return current==other.current;

@@ -42,6 +42,38 @@ TEST(Iterators, BasicTest)
     std::string expectedOutput = "124\n142\n24\n4242\n";
     EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
+TEST(Iterators, AdvancedTest)
+{
+    SkipList<int> list;
+    list.insert(42);
+    list.insert(24);
+    list.insert(142);
+    list.insert(124);
+    auto it = list.begin();
+    
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    std::ostringstream capturedOutput;
+    std::cout.rdbuf(capturedOutput.rdbuf());
+    while (it!=list.end())
+    {
+        auto prev = it++;
+        if (*it==42)
+        {
+            std::cout << 42;
+        }
+        std::cout<<*prev <<"  " << *it << "\n"<<"  ";
+        it++;
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+    
+    std::string expectedOutput = "124  142\n  4224  42\n  ";
+    SkipList<std::string> string_list;
+    string_list.insert("Artem");
+    auto it2 = string_list.begin();
+    EXPECT_TRUE(it2->size()==5);
+    EXPECT_EQ(capturedOutput.str(), expectedOutput);
+}
+
 //info
 TEST(Information, Print)
 {
