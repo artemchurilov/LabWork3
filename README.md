@@ -1,6 +1,6 @@
 # LabWork3 - STL Template
 
-# Step 2 - Minimal Game
+# Step 3 - Documentary
 
 ## Author
 Чурилов Артём Валерьевич, группа 24.Б82-мм
