@@ -3,7 +3,8 @@
 */
 
 #include <iostream>
-
+#include <iterator>
+#include <numeric> 
 template <typename T>
 class SkipList
 {
@@ -16,6 +17,35 @@ private:
     };
     Node* head;
     size_t size;
+
+    void copyFrom(const SkipList& other)
+    {
+        if(other.head==nullptr)
+        {
+            head=nullptr;
+            size=0;
+            return;
+        }
+
+        head = new Node(other.head->value);
+        Node* current = head;
+        Node* otherCurrent = other.head-> next;
+        
+        while(otherCurrent)
+        {
+            current->next = new Node(otherCurrent->value);
+            current = current -> next;
+            otherCurrent = otherCurrent -> next;
+        }
+        size = other.size;
+    }
+    void clear()
+    {
+        while (head) 
+        {
+            pop_front();
+        }
+    }
 public:
     SkipList() : head(nullptr),size(0) {}
     ~SkipList()
@@ -23,12 +53,35 @@ public:
         clear();
     }
 
+    SkipList(const SkipList& other) : head(nullptr), size(0)
+    {
+        copyFrom(other);
+    }
+
+    SkipList& operator=(const SkipList& other)
+    {
+        if(this != &other)
+        {
+            clear();
+            copyFrom(other);
+        }
+        return *this;
+    }
+        
+
     //iterators
     class Iterator
     {
     private:
         Node* current;
     public:
+        //types
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
+        //operations
         Iterator(Node* node):current(node){}
         T& operator*()
         {
@@ -75,8 +128,14 @@ public:
     private:
         const Node* current;
     public:
+        //types
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = const T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = const T*;
+        using reference = const T&;  
+        //operations
         ConstIterator(const Node* node) : current(node){};
-        
         const T& operator*() const
         {
             return current->value;
@@ -124,7 +183,7 @@ public:
     {
         return ConstIterator(nullptr);
     };    
-    
+
     //info
     bool contains(const T& value) const {
         Node* current = head;
@@ -173,13 +232,7 @@ public:
         delete temp;
         size--;
     }
-    void clear()
-    {
-        while (head) 
-        {
-            pop_front();
-        }
-    }
+
     bool remove(const T& value)
     {
         if(!head)

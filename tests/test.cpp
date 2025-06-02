@@ -2,6 +2,8 @@
     LabWork 3 task "STL-containers" step 2 "Create Template"
 */
 
+#include <vector>
+#include <algorithm>
 #include <gtest/gtest.h>
 #include "../include/list.h"
 
@@ -16,7 +18,7 @@ TEST(CITest, FirstTest)
 }
 
 //iterators
-TEST(Iterators, BasicTest)
+TEST(Iterator, BasicTest)
 {
     SkipList<int> list;
     list.insert(42);
@@ -42,7 +44,7 @@ TEST(Iterators, BasicTest)
     std::string expectedOutput = "124\n142\n24\n4242\n";
     EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
-TEST(Iterators, AdvancedTest)
+TEST(Iterator, AdvancedTest)
 {
     SkipList<int> list;
     list.insert(42);
@@ -73,7 +75,48 @@ TEST(Iterators, AdvancedTest)
     EXPECT_TRUE(it2->size()==5);
     EXPECT_EQ(capturedOutput.str(), expectedOutput);
 }
+TEST(ConstIterator, BasicTest) {
+    SkipList<int> list;
+    list.insert(42);
+    list.insert(24);
+    list.insert(43);
+    list.insert(422);
+    
+    const SkipList<int> constList = list;
+    std::vector<int> expected_values = {422, 43, 24, 42};
+    std::vector<int> actual_values;
 
+    for (auto it = constList.begin(); it != constList.end(); ++it) {
+        actual_values.push_back(*it);
+    }
+    std::cout << "\n";
+    
+    EXPECT_EQ(expected_values, actual_values);
+    EXPECT_FALSE(actual_values.empty());          
+    EXPECT_EQ(4, actual_values.size());       
+}
+
+TEST(ConstIterator, AdvancedTest) {
+    SkipList<int> list;
+    list.insert(42);
+    list.insert(24);
+    list.insert(43);
+    list.insert(422);
+    
+    const SkipList<int> constList = list;
+    
+    std::vector<int> expected = {422, 43, 24, 42};
+    std::vector<int> actual;
+    for (const auto& val : constList) {
+        actual.push_back(val);
+    }
+    EXPECT_EQ(expected, actual);
+    
+    EXPECT_NE(constList.begin(), constList.end());
+    
+    EXPECT_EQ(constList.begin(), constList.cbegin());
+    EXPECT_EQ(constList.end(), constList.cend());
+}
 //info
 TEST(Information, Print)
 {
@@ -144,23 +187,23 @@ TEST(Operations, PopFront)
     EXPECT_FALSE(list.contains(3)); 
 }
 
-TEST(Operations, Clear)
-{
-    SkipList<int> list;
-    list.insert(1);
-    list.insert(2);
-    list.insert(3);
-    list.clear();
-    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-    std::ostringstream capturedOutput;
-    std::cout.rdbuf(capturedOutput.rdbuf());
+// TEST(Operations, Clear)
+// {
+//     SkipList<int> list;
+//     list.insert(1);
+//     list.insert(2);
+//     list.insert(3);
+//     list.clear();
+//     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+//     std::ostringstream capturedOutput;
+//     std::cout.rdbuf(capturedOutput.rdbuf());
 
-    list.print();
-    std::cout.rdbuf(oldCoutBuffer);
+//     list.print();
+//     std::cout.rdbuf(oldCoutBuffer);
 
-    std::string expectedOutput = "\n";
-    EXPECT_EQ(capturedOutput.str(), expectedOutput);
-}
+//     std::string expectedOutput = "\n";
+//     EXPECT_EQ(capturedOutput.str(), expectedOutput);
+// }
 
 TEST(Operations, Remove)
 {
