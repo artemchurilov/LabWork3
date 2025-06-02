@@ -150,19 +150,19 @@ TEST(Information,Size)
     list.insert(42);
     list.insert(42);
     list.insert(42);
-    EXPECT_TRUE(list.get_size()==3);
+    EXPECT_TRUE(list.size()==3);
 }
 
 TEST(Information, IsEmpty)
 {
     SkipList<int> list;
-    EXPECT_TRUE(list.is_empty());
+    EXPECT_TRUE(list.empty());
 }
 TEST(Information, NotEmpty)
 {
     SkipList<int> list;
     list.insert(42);
-    EXPECT_FALSE(list.is_empty());
+    EXPECT_FALSE(list.empty());
 }
 
 

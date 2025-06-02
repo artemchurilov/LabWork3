@@ -5,9 +5,18 @@
 #include <iostream>
 #include <iterator>
 #include <numeric> 
+#include <ranges>
 template <typename T>
 class SkipList
 {
+public:
+    //types
+    using value_type = T;
+    using reference = T&;
+    using const_reference = const T&;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    
 private:
     struct Node
     {
@@ -16,14 +25,14 @@ private:
         Node(const T& val) : value(val), next(nullptr) {}
     };
     Node* head;
-    size_t size;
+    size_t size_;
 
     void copyFrom(const SkipList& other)
     {
         if(other.head==nullptr)
         {
             head=nullptr;
-            size=0;
+            size_=0;
             return;
         }
 
@@ -37,7 +46,7 @@ private:
             current = current -> next;
             otherCurrent = otherCurrent -> next;
         }
-        size = other.size;
+        size_ = other.size_;
     }
     void clear()
     {
@@ -47,13 +56,13 @@ private:
         }
     }
 public:
-    SkipList() : head(nullptr),size(0) {}
+    SkipList() : head(nullptr),size_(0) {}
     ~SkipList()
     {
         clear();
     }
 
-    SkipList(const SkipList& other) : head(nullptr), size(0)
+    SkipList(const SkipList& other) : head(nullptr), size_(0)
     {
         copyFrom(other);
     }
@@ -83,8 +92,18 @@ public:
         using reference = T&;
         //operations
         Iterator(Node* node):current(node){}
+        
+        Iterator ConstIterator() const
+        {
+            return ConstIterator(current);
+        }
+
         T& operator*()
         {
+            if(!current)
+            {
+                throw std::runtime_error("Dereferencing end iterator");
+            }
             return current->value;
         }
         Iterator& operator++()
@@ -103,6 +122,10 @@ public:
         }
         T* operator->()
         {
+            if(!current)
+            {
+                throw std::runtime_error("Accessing end iterator");
+            }
             return &(current->value);
         }
         bool operator==(const Iterator& other) const
@@ -136,8 +159,14 @@ public:
         using reference = const T&;  
         //operations
         ConstIterator(const Node* node) : current(node){};
+        ConstIterator(Iterator it) : current(it.operator->()){}
+
         const T& operator*() const
         {
+            if(!current)
+            {
+                throw std::runtime_error("Dereferencing end iterator");
+            }
             return current->value;
         }
         ConstIterator& operator++()
@@ -156,6 +185,10 @@ public:
         }
         const T* operator->() const
         {
+            if (!current)
+            {
+                throw std::runtime_error("Accessing end iterator");
+            }
             return &(current->value);
         }
         bool operator==(const ConstIterator& other) const
@@ -205,11 +238,13 @@ public:
         std::cout << "\n";
     }
     
-    size_t get_size() const {
-        return size;
+    size_t size() const 
+    {
+        return size_;
     }
-    bool is_empty() const {
-        return size == 0;
+    bool empty() const 
+    {
+        return size_ == 0;
     }
 
     //operations
@@ -218,7 +253,7 @@ public:
         Node* newNode = new Node(value);
         newNode->next = head;
         head = newNode;
-        size++;
+        size_++;
     }
     void pop_front() 
     {
@@ -230,7 +265,7 @@ public:
         Node* temp = head;
         head = head->next;
         delete temp;
-        size--;
+        size_--;
     }
 
     bool remove(const T& value)
@@ -253,7 +288,7 @@ public:
                 Node* temp = current->next;
                 current->next=temp->next;
                 delete temp;
-                size--;
+                size_--;
                 return true;
             }
             current=current->next;
