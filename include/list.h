@@ -40,7 +40,7 @@ public:
             {
                 current=current->next;
             }
-        return *this;
+            return *this;
         }
         Iterator operator++(int)
         {
@@ -69,6 +69,61 @@ public:
     {
         return Iterator(nullptr);
     };
+
+    class ConstIterator
+    {
+    private:
+        const Node* current;
+    public:
+        ConstIterator(const Node* node) : current(node){};
+        
+        const T& operator*() const
+        {
+            return current->value;
+        }
+        ConstIterator& operator++()
+        {
+            if(current)
+            {
+                current=current->next;
+            }
+            return *this;
+        }
+        ConstIterator operator++(int)
+        {
+            ConstIterator temporary = *this;
+            ++(*this);
+            return temporary;
+        }
+        const T* operator->() const
+        {
+            return &(current->value);
+        }
+        bool operator==(const ConstIterator& other) const
+        {
+            return current==other.current;
+        }
+        bool operator!=(const ConstIterator& other) const
+        {
+            return !(*this == other);
+        }
+    };
+    ConstIterator begin() const
+    {
+        return ConstIterator(head);
+    };
+    ConstIterator end() const
+    {
+        return ConstIterator(nullptr);
+    };
+    ConstIterator cbegin() const
+    {
+        return ConstIterator(head);
+    };
+    ConstIterator cend() const
+    {
+        return ConstIterator(nullptr);
+    };    
     
     //info
     bool contains(const T& value) const {
